@@ -190,53 +190,7 @@
       });
     });
   </script>
-  <!-- ===== Latent-space sliders ===== -->
-<div class="box" id="latent-box">
-  <h5 class="title is-5">Latent sliders (-3 … +3)</h5>
-  <div id="latent-sliders" class="columns is-multiline"></div>
-</div>
 
-<script>
-const VIS_ORIGIN = 'https://opencap-visualizer.onrender.com';
-const iframe   = document.getElementById('visualizer-iframe');
-const NS       = 16, step = 0.1;
-const sliders  = [];
-const holder   = document.getElementById('latent-sliders');
-let   pending  = null;            // debounce timer
-
-// build sliders
-for (let i = 0; i < NS; i++) {
-  const col = document.createElement('div');
-  col.className = 'column is-one-third';
-  col.innerHTML = `
-    <label class="label is-small">z<sub>${i+1}</sub></label>
-    <input id="z${i}" type="range" min="-3" max="3" step="${step}" value="0"
-           class="slider is-fullwidth is-small">`;
-  holder.appendChild(col);
-  sliders.push(col.querySelector('input'));
-  col.querySelector('input').addEventListener('input', onSlide);
-}
-
-function onSlide() {
-  clearTimeout(pending);
-  pending = setTimeout(sendVector, 300);  // 300 ms debounce
-}
-
-function sendVector() {
-  const vec = sliders.map(s => parseFloat(s.value));
-  fetch('/reconstruct', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({features: vec})
-  })
-  .then(r => r.json())
-  .then(({json_url}) => {
-      iframe.contentWindow.postMessage(
-        {type: 'load_json', url: json_url}, VIS_ORIGIN);
-  })
-  .catch(err => console.error(err));
-}
-</script>
 
   <section class="hero">
     <div class="hero-body">
@@ -311,6 +265,53 @@ function sendVector() {
 </div>
 </section> 
 
+<!-- ===== Latent-space sliders ===== -->
+<div class="box" id="latent-box">
+  <h5 class="title is-5">Latent sliders (-3 … +3)</h5>
+  <div id="latent-sliders" class="columns is-multiline"></div>
+</div>
+
+<script>
+const VIS_ORIGIN = 'https://opencap-visualizer.onrender.com';
+const iframe   = document.getElementById('visualizer-iframe');
+const NS       = 16, step = 0.1;
+const sliders  = [];
+const holder   = document.getElementById('latent-sliders');
+let   pending  = null;            // debounce timer
+
+// build sliders
+for (let i = 0; i < NS; i++) {
+  const col = document.createElement('div');
+  col.className = 'column is-one-third';
+  col.innerHTML = `
+    <label class="label is-small">z<sub>${i+1}</sub></label>
+    <input id="z${i}" type="range" min="-3" max="3" step="${step}" value="0"
+           class="slider is-fullwidth is-small">`;
+  holder.appendChild(col);
+  sliders.push(col.querySelector('input'));
+  col.querySelector('input').addEventListener('input', onSlide);
+}
+
+function onSlide() {
+  clearTimeout(pending);
+  pending = setTimeout(sendVector, 300);  // 300 ms debounce
+}
+
+function sendVector() {
+  const vec = sliders.map(s => parseFloat(s.value));
+  fetch('/reconstruct', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({features: vec})
+  })
+  .then(r => r.json())
+  .then(({json_url}) => {
+      iframe.contentWindow.postMessage(
+        {type: 'load_json', url: json_url}, VIS_ORIGIN);
+  })
+  .catch(err => console.error(err));
+}
+</script>
 
 <!-- Teaser video-->
 <section class="hero teaser">
