@@ -1,828 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
-  <!-- Replace the content tag with appropriate information -->
-  <meta name="description" content="OpenCap Monocular: 3D Human Movement Kinematics from a Single Smartphone">
-  <meta property="og:title" content="OpenCap Monocular: 3D Human Movement Kinematics from a Single Smartphone"/>
-  <meta property="og:description" content="An algorithm for computing 3D skeletal kinematics from a single static smartphone video"/>
-  <meta property="og:url" content="URL OF THE WEBSITE"/>
-  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
-  <meta property="og:image" content="static/image/your_banner_image.png" />
-  <meta property="og:image:width" content="1200"/>
-  <meta property="og:image:height" content="630"/>
-
-
-  <meta name="twitter:title" content="OpenCap Monocular: Human Movement Kinematics from a Single Smartphone">
-  <meta name="twitter:description" content="An algorithm for computing 3D skeletal kinematics from a single static smartphone video">
-  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
-  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <!-- Keywords for your paper to be indexed by-->
-  <meta name="keywords" content="motion capture, biomechanics, kinematics, smartphone, OpenCap, markerless motion capture">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-  <title>OpenCap Monocular: 3D Human Movement Kinematics from a Single Smartphone Video</title>
-  <link rel="icon" type="image/x-icon" sizes="16x16 32x32" href="static/images/fav.png">
+  <!-- Social / SEO -->
+  <title>GaitEncoder – Foundational Representations of Gait</title>
+  <meta name="description" content="GaitEncoder learns compact, clinically relevant representations of gait that generalise across diverse pathologies and data‑collection modalities.">
+  <meta name="keywords" content="gait, biomechanics, variational autoencoder, foundation model, clinical gait analysis">
+  <meta property="og:title" content="GaitEncoder – Foundational Representations of Gait" />
+  <meta property="og:description" content="A generative foundation model that distills stride‑level kinematics into a 16‑D latent space enabling downstream clinical tasks such as disease staging, rehabilitation tracking and outcome prediction." />
+  <!-- 🖼 Site banner placeholder (1200×630) -->
+  <meta property="og:image" content="static/images/site_banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-  rel="stylesheet">
-
   <link rel="stylesheet" href="static/css/bulma.min.css">
-  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
   <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="static/css/index.css">
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
-  <script defer src="static/js/fontawesome.all.min.js"></script>
-  <script src="static/js/bulma-carousel.min.js"></script>
-  <script src="static/js/bulma-slider.min.js"></script>
-  <script src="static/js/index.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {font-family: "Google Sans", sans-serif;}
+    .dark-mode-toggle {position: fixed; top: 1rem; right: 1rem; z-index: 1000;}
+    .dark-mode-toggle .button {border-radius: 50%;}
+    body.dark-mode {background:#1a1a1a;color:#f3f3f3;}
+    body.dark-mode .card {background:#2d2d2d;color:#f3f3f3;}
+    .video-thumb video{width:100%;height:100%;object-fit:cover;cursor:pointer;}
+    .video-thumb{transition:transform .2s;box-shadow:0 2px 3px rgba(10,10,10,.1)}
+    .video-thumb:hover{transform:scale(1.03)}
+  </style>
 </head>
 <body>
-  <!-- Dark mode toggle -->
-  <div class="dark-mode-toggle">
-    <button class="button is-small" id="dark-mode-toggle" aria-label="Dark mode toggle">
-      <span class="icon">
-        <i class="fas fa-moon"></i>
-      </span>
-    </button>
-  </div>
-
-  <style>
-    /* Dark mode styles */
-    body.dark-mode {
-      background-color: #1a1a1a;
-      color: #ffffff;
-    }
-
-    body.dark-mode .title,
-    body.dark-mode .subtitle,
-    body.dark-mode .content,
-    body.dark-mode h2,
-    body.dark-mode .footer {
-      color: #ffffff;
-    }
-
-    body.dark-mode .hero:not(.is-dark) {
-      background-color: #1a1a1a;
-      color: #ffffff;
-    }
-
-    body.dark-mode .hero.is-light {
-      background-color: #2d2d2d;
-    }
-
-    body.dark-mode .hero.is-light .title {
-      color: #ffffff !important;
-    }
-
-    body.dark-mode .card {
-      background-color: #2d2d2d;
-      color: #ffffff;
-    }
-
-    body.dark-mode .card-content {
-      background-color: #2d2d2d;
-      color: #ffffff;
-    }
-
-    body.dark-mode .box {
-      background-color: #2d2d2d;
-      color: #ffffff;
-    }
-
-    body.dark-mode .footer {
-      background-color: #2d2d2d;
-    }
-
-    body.dark-mode .footer a {
-      color: #3273dc;
-    }
-
-    body.dark-mode .footer a:hover {
-      color: #4a9eff;
-    }
-
-    .dark-mode-toggle {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      z-index: 100;
-    }
-
-    .dark-mode-toggle button {
-      border-radius: 50%;
-      width: 2.5rem;
-      height: 2.5rem;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      border: 1px solid #dbdbdb;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    body.dark-mode .dark-mode-toggle button {
-      background-color: #2d2d2d;
-      border-color: #4a4a4a;
-      color: #ffffff;
-    }
-
-    .dark-mode-toggle button:hover {
-      transform: scale(1.1);
-    }
-
-    body.dark-mode .video-thumbnail {
-      background-color: #2d2d2d;
-    }
-
-    body.dark-mode .video-thumbnail .card-content {
-      background-color: #363636;
-    }
-
-    #main-video {
-      width: 100%;
-      /* max-height: 70vh; REMOVE */
-      height: 100%; /* ADD */
-      /* object-fit: contain; REMOVE */
-      object-fit: cover; /* ADD */
-    }
-  </style>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const darkModeToggle = document.getElementById('dark-mode-toggle');
-      const body = document.body;
-      const icon = darkModeToggle.querySelector('i');
-      
-      // Check for saved dark mode preference
-      const darkMode = localStorage.getItem('darkMode') === 'true';
-      if (darkMode) {
-        body.classList.add('dark-mode');
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-      }
-
-      // Toggle dark mode
-      darkModeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        const isDarkMode = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
-        
-        // Toggle icon
-        if (isDarkMode) {
-          icon.classList.remove('fa-moon');
-          icon.classList.add('fa-sun');
-        } else {
-          icon.classList.remove('fa-sun');
-          icon.classList.add('fa-moon');
-        }
-      });
-    });
-  </script>
-
-
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">OpenCap Monocular: 3D Human Movement Kinematics from a Single Smartphone Video</h1>
-            <div class="is-size-5 publication-authors">
-              <!-- Paper authors -->
-              <span class="author-block">
-                <a href="https://www.linkedin.com/in/selim-gilon/" target="_blank">Selim Gilon</a><sup>*</sup>,</span>
-               
-                <span class="author-block">
-                  <a href="https://www.linkedin.com/in/scott-uhlrich-135aba72/" target="_blank">Scott D. Uhlrich</a>
-                </span>
-            </div>
-
-            <div class="is-size-5 publication-authors">
-              <span class="author-block"><a href="https://mobl.mech.utah.edu/" target="_blank">Movement Bioengineering Lab (MoBL)</a>, University of Utah, Salt Lake City, UT<br></span>
-
-              <span class="author-block"><small><sup>*</sup>Corresponding author: selim.gilon@utah.edu</small></span>
-            </div>
-
-            <!-- <div class="column has-text-centered"> -->
-              <!-- <div class="publication-links">
-                   <!-- Arxiv PDF link -->
-                <!-- <span class="link-block">
-                  <a href="https://arxiv.org/pdf/<ARXIV PAPER ID>.pdf" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-
-              Supplementary PDF link
-              <span class="link-block">
-                <a href="static/pdfs/supplementary_material.pdf" target="_blank"
-                class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                  <i class="fas fa-file-pdf"></i>
-                </span>
-                <span>Supplementary</span>
-              </a>
-           </span>  -->
-
-            <!-- Github link -->
-            <!-- <span class="link-block">
-              <a href="https://github.com/YOUR REPO HERE" target="_blank"
-              class="external-link button is-normal is-rounded is-dark">
-              <span class="icon">
-                <i class="fab fa-github"></i>
-              </span>
-              <span>Code</span>
-            </a>
-          </span> -->
-
-            <!-- ArXiv abstract Link -->
-            <!-- <span class="link-block">
-              <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
-              class="external-link button is-normal is-rounded is-dark">
-              <span class="icon">
-                <i class="ai ai-arxiv"></i>
-              </span>
-              <span>arXiv</span>
-            </a>
-          </span> -->
-      </div>
-    </div>
-  </div>
+<!-- ========== Dark‑mode toggle ========== -->
+<div class="dark-mode-toggle">
+  <button class="button is-small" id="dark-toggle" aria-label="Toggle dark mode">
+    <span class="icon"><i class="fas fa-moon"></i></span>
+  </button>
 </div>
-</section> 
-
-<!-- ===== Latent-space sliders ===== -->
-<div class="box" id="latent-box">
-  <h5 class="title is-5">Latent sliders (-3 … +3)</h5>
-  <div id="latent-sliders" class="columns is-multiline"></div>
-</div>
-
 <script>
-const VIS_ORIGIN = 'https://opencap-visualizer.onrender.com';
-const iframe   = document.getElementById('visualizer-iframe');
-const NS       = 16, step = 0.1;
-const sliders  = [];
-const holder   = document.getElementById('latent-sliders');
-let   pending  = null;            // debounce timer
-
-// build sliders
-for (let i = 0; i < NS; i++) {
-  const col = document.createElement('div');
-  col.className = 'column is-one-third';
-  col.innerHTML = `
-    <label class="label is-small">z<sub>${i+1}</sub></label>
-    <input id="z${i}" type="range" min="-3" max="3" step="${step}" value="0"
-           class="slider is-fullwidth is-small">`;
-  holder.appendChild(col);
-  sliders.push(col.querySelector('input'));
-  col.querySelector('input').addEventListener('input', onSlide);
-}
-
-function onSlide() {
-  clearTimeout(pending);
-  pending = setTimeout(sendVector, 300);  // 300 ms debounce
-}
-
-function sendVector() {
-  const vec = sliders.map(s => parseFloat(s.value));
-  fetch('/reconstruct', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({features: vec})
-  })
-  .then(r => r.json())
-  .then(({json_url}) => {
-      iframe.contentWindow.postMessage(
-        {type: 'load_json', url: json_url}, VIS_ORIGIN);
-  })
-  .catch(err => console.error(err));
-}
+  const body=document.body,btn=document.getElementById('dark-toggle'),icon=btn.querySelector('i');
+  if(localStorage.getItem('dark')==='true'){body.classList.add('dark-mode');icon.classList.replace('fa-moon','fa-sun');}
+  btn.onclick=()=>{body.classList.toggle('dark-mode');const d=body.classList.contains('dark-mode');localStorage.setItem('dark',d);icon.classList.toggle('fa-moon');icon.classList.toggle('fa-sun');};
 </script>
 
-<!-- Teaser video-->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- Video Modal -->
-      <div class="modal" id="video-modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-          <div class="box p-0">
-            <video id="modal-video" controls muted loop width="100%">
-              <source src="" type="video/mp4">
-            </video>
-          </div>
-        </div>
-        <button class="modal-close is-large" aria-label="close"></button>
-      </div>
-
-      <!-- Video Grid -->
-      <div class="container" style="max-width: 650px;">
-        <div class="columns is-mobile is-multiline is-centered mb-4" style="gap: 0.5rem; margin: 0 0.5rem;">
-          <div class="column is-narrow" style="padding: 0; width: 200px;">
-            <div class="card video-thumbnail" style="margin: 0;">
-              <div class="card-image" style="margin: 0;">
-                <figure class="image" style="margin: 0; aspect-ratio: 3/4;">
-                  <video muted loop onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;" data-full-video="static/videos/4walking4.mp4" style="object-position: center 20%;">
-                    <source src="static/videos/4walking4.mp4" type="video/mp4">
-                  </video>
-                </figure>
-              </div>
-              <div class="card-content has-text-centered px-2 py-1" style="border-top: none;">
-                <p class="is-size-7 has-text-weight-medium mb-0">Walking</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="column is-narrow" style="padding: 0; width: 200px;">
-            <div class="card video-thumbnail" style="margin: 0;">
-              <div class="card-image" style="margin: 0;">
-                <figure class="image" style="margin: 0; aspect-ratio: 3/4;">
-                  <video muted loop onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;" data-full-video="static/videos/10squat1.mp4" style="object-position: center 20%;">
-                    <source src="static/videos/10squat1.mp4" type="video/mp4">
-                  </video>
-                </figure>
-              </div>
-              <div class="card-content has-text-centered px-2 py-1" style="border-top: none;">
-                <p class="is-size-7 has-text-weight-medium mb-0">Squatting</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="column is-narrow" style="padding: 0; width: 200px;">
-            <div class="card video-thumbnail" style="margin: 0;">
-              <div class="card-image" style="margin: 0;">
-                <figure class="image" style="margin: 0; aspect-ratio: 3/4;">
-                  <video muted loop onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;" data-full-video="static/videos/11STS1.mp4" style="object-position: center 20%;">
-                    <source src="static/videos/11STS1.mp4" type="video/mp4">
-                  </video>
-                </figure>
-              </div>
-              <div class="card-content has-text-centered px-2 py-1" style="border-top: none;">
-                <p class="is-size-7 has-text-weight-medium mb-0">Sit-to-Stand</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- <div class="column is-narrow" style="padding: 0; width: 200px;">
-            <div class="card video-thumbnail" style="margin: 0;">
-              <div class="card-image" style="margin: 0;">
-                <figure class="image" style="margin: 0; aspect-ratio: 3/4;">
-                  <video muted loop onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;" data-full-video="static/videos/rmasb.mp4" style="object-position: center 20%;">
-                    <source src="static/videos/rmasb.mp4" type="video/mp4">
-                  </video>
-                </figure>
-              </div>
-              <div class="card-content has-text-centered px-2 py-1" style="border-top: none;">
-                <p class="is-size-7 has-text-weight-medium mb-0">RMASB  Live Demo</p>
-              </div>
-            </div>
-          </div> -->
-         
-        </div>
-      </div>
-
-      <!-- Main Video Player & Visualizer -->
-      <div class="columns is-variable is-2 mb-6 mx-0">
-        <div class="column is-one-third" style="padding-right: 0.5rem;">
-          <h6 class="title is-6 has-text-centered mb-2">Input: iphone video - 45 degrees angle</h6>
-          <video id="main-video" controls autoplay muted loop width="100%" style="display: block;">
-            <source src="static/videos/4walking4.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="column is-two-thirds" style="padding-left: 0.5rem;">
-          <h6 class="title is-6 has-text-centered mb-2">Output: 3D Human Movement Kinematics</h6>
-          <iframe 
-            id="visualizer-iframe"
-            src="https://opencap-visualizer.onrender.com/?sample_set=walk&embed=true&black_background=true" 
-            width="100%"
-            height="100%"
-            style="border: none; /* min-height: 400px; REMOVE */"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-            allowfullscreen>
-          </iframe>
-          <!-- Text and Button container -->
-          <div class="is-size-7 has-text-grey mt-2 mb-4" style="display: flex; justify-content: center; align-items: center;">
-            <span>Rotate: Left Click & Drag | Pan: Right Click & Drag | Zoom: Scroll</span>
-            <!-- Button moved back here -->
-            <a id="open-visualizer-button" href="#" target="_blank" class="button is-link is-outlined is-small" style="margin-left: 1rem;">
-              <span class="icon">
-                <i class="fas fa-external-link-alt"></i>
-              </span>
-              <span>Open Visualizer</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-
-
-      <!-- Add mt-5 to this div -->
-      <div class="columns is-centered mt-5">
-        <div class="column is-narrow">
-          <div class="box" style="display: inline-flex; gap: 2rem;">
-            <div class="legend-item">
-              <span class="icon-text">
-                <span class="icon">
-                  <i class="fas fa-circle" style="color: #d3d3d3;"></i>
-                </span>
-                <span>Motion Capture</span>
-              </span>
-            </div>
-            <div class="legend-item">
-              <span class="icon-text">
-                <span class="icon">
-                  <i class="fas fa-circle" style="color: #4995e0;"></i>
-                </span>
-                <span>OpenCap Mono</span>
-              </span>
-            </div>
-            <div class="legend-item">
-              <span class="icon-text">
-                <span class="icon">
-                  <i class="fas fa-circle" style="color: #e35335;"></i>
-                </span>
-                <span>SOA model - WHAM</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <h2 class="subtitle has-text-centered">
-        On the left, the video taken by an Iphone. 
-        On the right, the 3D kinematics from Motion Capture (ground truth), WHAM, and OpenCap Monocular.
-      </h2>
+<!-- ========== Header ========== -->
+<section class="hero is-fullwidth">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title is-2">GaitEncoder: Learning Foundational Representations of Gait</h1>
+      <h2 class="subtitle is-5">R. Daniel Magruder, Selim Gilon, Antoine Falisse, Scott D. Uhlrich</h2>
+      <p class="is-size-6"><em>Movement Bioengineering Lab, University of Utah</em></p>
     </div>
   </div>
 </section>
 
-<style>
-.video-thumbnail {
-  transition: transform 0.2s;
-  box-shadow: 0 2px 3px rgba(10,10,10,0.1);
-}
-
-.video-thumbnail:hover {
-  transform: scale(1.02);
-}
-
-.video-thumbnail video {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.video-thumbnail.active {
-  border: 2px solid #2ecc71;
-}
-
-#main-video {
-  width: 100%;
-  /* max-height: 70vh; REMOVE */
-  height: 100%; /* ADD */
-  /* object-fit: contain; REMOVE */
-  object-fit: cover; /* ADD */
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const videoThumbnails = document.querySelectorAll('.video-thumbnail');
-  const mainVideo = document.querySelector('#main-video');
-  const visualizerIframe = document.querySelector('#visualizer-iframe'); // Get the iframe
-  const openVisualizerButton = document.getElementById('open-visualizer-button'); // Get the new button
-
-  // Map movement types to URLs
-  const visualizerUrls = {
-    'Walking': 'https://opencap-visualizer.onrender.com/?sample_set=walk&embed=true&black_background=true',
-    'Squatting': 'https://opencap-visualizer.onrender.com/?sample_set=squat&embed=true&black_background=true',
-    'Sit-to-Stand': 'https://opencap-visualizer.onrender.com/?sample_set=STS&embed=true&black_background=true',
-    'RMASB  Live Demo': 'https://opencap-visualizer.onrender.com/?sample_set=rmasb&embed=true&black_background=true'
-  };
-  
-  // Function to update main video, visualizer iframe, and button link
-  const updateContent = (thumbnail) => {
-    const videoElement = thumbnail.querySelector('video');
-    const fullVideoSrc = videoElement.getAttribute('data-full-video');
-    const movementType = thumbnail.querySelector('.card-content p').textContent; // Get movement type from title
-    
-    // Update video source
-    mainVideo.querySelector('source').src = fullVideoSrc;
-    mainVideo.load();
-    mainVideo.play();
-    
-    // Update visualizer iframe source and button link
-    if (visualizerUrls[movementType]) {
-      const visualizerUrl = visualizerUrls[movementType]; // Get the URL
-      visualizerIframe.src = visualizerUrl; // Keep embed=true for the iframe
-      openVisualizerButton.href = visualizerUrl.replace('&embed=true', ''); // Remove embed=true for the button link
-    }
-    
-    // Update active state
-    videoThumbnails.forEach(t => t.classList.remove('active'));
-    thumbnail.classList.add('active');
-  };
-
-  // Add click event to thumbnails
-  videoThumbnails.forEach(thumbnail => {
-    thumbnail.addEventListener('click', () => {
-      updateContent(thumbnail);
-    });
-  });
-
-  // Set first video as active and set initial button href by default
-  if (videoThumbnails.length > 0) {
-    videoThumbnails[0].classList.add('active');
-    const initialMovementType = videoThumbnails[0].querySelector('.card-content p').textContent;
-    if (visualizerUrls[initialMovementType]) {
-        const initialVisualizerUrl = visualizerUrls[initialMovementType];
-        openVisualizerButton.href = initialVisualizerUrl.replace('&embed=true', ''); // Remove embed=true for the initial button link
-    }
-  } 
-
-  // Add timeupdate listener to the main video
-  mainVideo.addEventListener('timeupdate', () => {
-    // Check if the iframe's content window is available (it might not be immediately after load/change)
-    if (visualizerIframe.contentWindow) {
-      // Send the current time to the iframe
-      // Use the specific origin for better security
-      visualizerIframe.contentWindow.postMessage(mainVideo.currentTime, 'https://opencap-visualizer.onrender.com');
-    }
-  });
-
-  // Send play/pause state TO iframe
-  mainVideo.addEventListener('play', () => {
-    if (visualizerIframe.contentWindow) {
-      visualizerIframe.contentWindow.postMessage({ type: 'play' }, 'https://opencap-visualizer.onrender.com');
-    }
-  });
-
-  mainVideo.addEventListener('pause', () => {
-    if (visualizerIframe.contentWindow) {
-      visualizerIframe.contentWindow.postMessage({ type: 'pause' }, 'https://opencap-visualizer.onrender.com');
-    }
-  });
-
-  // Listen for messages FROM iframe (including play/pause requests)
-  window.addEventListener('message', (event) => {
-    // Always verify the origin for security
-    if (event.origin !== 'https://opencap-visualizer.onrender.com') {
-      return;
-    }
-
-    // Handle time updates (existing functionality)
-    if (typeof event.data === 'number') {
-      // This assumes the visualizer might send its time back, which it currently doesn't
-      // We might remove this if the visualizer only *receives* time
-      // For now, let's keep the structure but know it might not be used
-    } 
-    // Handle play/pause commands from iframe
-    else if (typeof event.data === 'object' && event.data.type) {
-      switch (event.data.type) {
-        case 'play':
-          if (mainVideo.paused) {
-            mainVideo.play();
-          }
-          break;
-        case 'pause':
-          if (!mainVideo.paused) {
-            mainVideo.pause();
-          }
-          break;
-        // Add other message types if needed
-      }
-    }
-  });
-
-});
-</script>
-
-
-<!-- Paper abstract -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            <strong>Introduction:</strong> Measuring human movement has broad applications across rehabilitation, sports science, and disease monitoring. Traditional marker-based motion capture is widely used in lab-based biomechanics research but is rarely used in large-scale mobility studies or in the clinic because it requires hours-long analysis by an expert using specialized equipment. Markerless motion capture simplifies the collection and processing of movement data. For example, we developed OpenCap, which quantifies 3D motion and musculoskeletal forces from two smartphone videos. This improves the accessibility of motion capture; however, the need for two calibrated, tripod-mounted smartphones is still limiting in some settings, like the home. If we could accurately measure motion with a single smartphone video, the four billion smartphone owners around the world would have access to 3D motion capture.
-          </p>
-          <p>
-            <strong>Methods:</strong> We developed OpenCap Monocular, an algorithm for computing 3D skeletal kinematics from a single static smartphone video. The pipeline first estimates the pose of a 3D human mesh model using a regression-based global pose estimation model WHAM. It then refines the global pose using a gradient-based optimization routine that minimizes 3D joint reprojection error and improves foot-floor kinematics. Subsequently, marker positions are extracted from the human mesh, and kinematics of a musculoskeletal model are computed using OpenSim 4.4. We validate the kinematics of OpenCap Monocular against marker-based motion capture on videos (camera 45° from front-facing) of 10 individuals walking, squatting, and performing sit-to-stand.
-          </p>
-          <p>
-            <strong>Results & Discussion:</strong> OpenCap Monocular had MAEs of 5.5° for rotational degrees of freedom and 4.1 cm for translational degrees of freedom, compared to 4.3° and 1.3 mm for two-camera OpenCap. While the rotational errors are similar between OpenCap Monocular and two-camera OpenCap, the OpenCap Mono translational errors are 3 times larger, likely due to the lack of depth information. These increased errors may be acceptable in many applications, given the increased accessibility of a single-smartphone solution.
-          </p>
-          <p>
-            <strong>Significance:</strong> The ability to estimate kinematics from a single smartphone increases the accessibility of measuring human motion. Our algorithm estimates 3D kinematics with only slightly greater rotational errors, compared to a two-camera approach, but greater translational errors. Further work is needed to validate the clinical utility of OpenCap Monocular. This work is a step towards regular in-home and in-clinic movement assessments, with implications in precision rehabilitation, longitudinal monitoring, and injury risk screening.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End paper abstract -->
-
-
-<!-- Image carousel -->
-<!-- <section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-       <div class="item">
-        <img src="static/images/carousel1.jpg" alt="MY ALT TEXT"/>
-        <h2 class="subtitle has-text-centered">
-          First image description.
-        </h2>
-      </div>
-      <div class="item">
-        <img src="static/images/carousel2.jpg" alt="MY ALT TEXT"/>
-        <h2 class="subtitle has-text-centered">
-          Second image description.
-        </h2>
-      </div>
-      <div class="item">
-        Your image here -->
-        <!-- <img src="static/images/carousel3.jpg" alt="MY ALT TEXT"/>
-        <h2 class="subtitle has-text-centered">
-         Third image description.
-       </h2>
-     </div>
-     <div class="item">
-      <img src="static/images/carousel4.jpg" alt="MY ALT TEXT"/>
-      <h2 class="subtitle has-text-centered">
-        Fourth image description.
-      </h2>
-    </div>
-  </div>
-</div>
-</div>
-</section> --
-
-
-
-
-
-
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      Paper video.
-      <h2 class="title is-3">Video Presentation</h2>
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          
-          <div class="publication-video">
-            Youtube embed code here
-            <iframe src="https://www.youtube.com/embed/JkaxUblCGz0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-Video carousel -->
-<!-- <section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title is-3">Another Carousel</h2>
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-video1">
-          <video poster="" id="video1" autoplay controls muted loop height="100%">
-            Your video file here
-            <source src="static/videos/carousel1.mp4"
-            type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-video2">
-          <video poster="" id="video2" autoplay controls muted loop height="100%">
-            Your video file here
-            <source src="static/videos/carousel2.mp4"
-            type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-video3">
-          <video poster="" id="video3" autoplay controls muted loop height="100%">\
-            Your video file here
-            <source src="static/videos/carousel3.mp4"
-            type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>  -
- End video carousel -->
-
-
-
-<!-- Poster -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title">Poster</h2>
-
-      <iframe  src="static/pdfs/poster.pdf" width="100%" height="1000">
-          </iframe>
-        
-      </div>
-    </div>
-  </section>
-<!--Poster -->
-
-
-<!-- Paper Abstract -->
-<!-- <section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title">Abstract</h2>
-
-      <iframe  src="static/pdfs/abstract.pdf" width="100%" height="550">
-          </iframe>
-        
-      </div>
-    </div>
-  </section> -->
-<!--End paper abstract -->
-
-<!--BibTex citation -->
-  <!-- <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <h2 class="title">BibTeX</h2>
-      <pre><code>BibTex Code Here</code></pre>
-    </div>
-</section> -->
-<!--End BibTex citation -->
-
-<!-- OpenCap Visualizer Section -->
+<!-- ========== Teaser videos ========== -->
 <section class="section">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths has-text-centered">
-        <h2 class="title is-3">Interactive Visualizer</h2>
-        <div class="content">
-          <p>
-            We developed an interactive web-based visualizer to explore the 3D kinematics computed by OpenCap Monocular alongside the original video and ground truth data.
-          </p>
-          <p>
-            You can interact with sample results, compare different methods, and view the movements from any angle.
-          </p>
-          <p>
-            <strong>Try the visualizer here:</strong> 
-            <a href="https://opencap-visualizer.onrender.com/" target="_blank" class="button is-link is-outlined">
-              Open Visualizer
-            </a>
-          </p>
+    <h2 class="title is-3 has-text-centered">Example Reconstructions</h2>
+
+    <!-- Modal for large playback -->
+    <div class="modal" id="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box p-0">
+          <video id="modal-video" controls autoplay loop style="width:100%"></video>
         </div>
       </div>
+      <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+
+    <div class="columns is-mobile is-multiline is-centered" style="gap:1rem;">
+      <!-- Card template -->
+      <template id="vid-card-tpl">
+        <div class="column is-narrow video-thumb" style="width:200px;padding:0;">
+          <div class="card" style="margin:0;">
+            <div class="card-image">
+              <figure class="image" style="margin:0;aspect-ratio:3/4;">
+                <video muted loop></video>
+              </figure>
+            </div>
+            <div class="card-content py-1 has-text-centered" style="border-top:none;">
+              <p class="is-size-7 has-text-weight-medium mb-0 label"></p>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Thumbnails populated by JS -->
+      <div id="video-grid" class="columns is-mobile is-multiline is-centered" style="gap:1rem;"></div>
+    </div>
+  </div>
+</section>
+<script>
+  const vids=[
+    {file:'static/videos/unimpaired.mp4', label:'Unimpaired'},
+    {file:'static/videos/post_stroke.mp4', label:'Post‑Stroke'},
+    {file:'static/videos/parkinsons.mp4', label:"Parkinson's Disease"},
+    {file:'static/videos/cerebral_palsy.mp4', label:'Cerebral Palsy'}
+  ];
+  const grid=document.getElementById('video-grid');
+  const tpl=document.getElementById('vid-card-tpl').content;
+  vids.forEach(v=>{
+    const node=tpl.cloneNode(true);
+    const vidEl=node.querySelector('video');
+    const card=node.querySelector('.video-thumb');
+    vidEl.src=v.file; vidEl.setAttribute('data-src',v.file);
+    node.querySelector('.label').textContent=v.label;
+    // hover play / reset
+    vidEl.onmouseover=()=>vidEl.play();
+    vidEl.onmouseout =()=>{vidEl.pause();vidEl.currentTime=0;};
+    // click -> modal
+    card.onclick=()=>{
+      const modal=document.getElementById('modal');
+      const mvid=document.getElementById('modal-video');
+      mvid.src=v.file;
+      modal.classList.add('is-active');
+    };
+    grid.appendChild(node);
+  });
+  // modal controls
+  document.querySelectorAll('#modal .modal-background, #modal .modal-close').forEach(el=>{
+    el.onclick=()=>{
+      const modal=document.getElementById('modal');
+      const mvid=document.getElementById('modal-video');
+      mvid.pause();
+      modal.classList.remove('is-active');
+    };
+  });
+</script>
+
+<!-- ========== Abstract ========== -->
+<section class="section has-background-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Abstract</h2>
+    <div class="content">
+      <p><strong>Background.</strong> Regular gait analysis could enhance personalised treatment for many movement‑related conditions; however, it is not routinely integrated into clinical care. Although mobile sensing (e.g. smartphone‑based motion capture) enables rapid gait assessment, extracting actionable insights remains challenging.</p>
+      <p><strong>Objective.</strong> We introduce <em>GaitEncoder</em>, a generative foundation model that encodes high‑dimensional 3D gait kinematics into a compact 16‑dimensional latent space and enables clinically meaningful downstream tasks across diverse pathologies.</p>
+      <p><strong>Methods.</strong> We aggregated eight datasets comprising 631 individuals spanning seven pathologies and trained a semi‑supervised variational autoencoder. We evaluated zero‑shot disorder classification, UPDRS severity prediction, rehabilitation tracking, and patient‑specific surgical outcome prediction.</p>
+      <p><strong>Results.</strong> The latent representation distinguished an unseen neuromuscular disorder from controls, predicted Parkinson’s Disease severity (<em>r = 0.65</em>), tracked acute stroke recovery, and outperformed average‑effect baselines in forecasting post‑hip‑replacement kinematic changes.</p>
+      <p><strong>Significance.</strong> GaitEncoder’s generalisable representation accelerates the development of clinical tools for monitoring disease progression, guiding rehabilitation, and informing surgical decisions, particularly for rare movement‑related disorders.</p>
     </div>
   </div>
 </section>
 
+<!-- ========== Poster ========== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Poster</h2>
+    <!-- Replace poster.pdf with your actual file path -->
+    <iframe src="static/pdfs/poster.pdf" style="width:100%;height:1000px;border:none;"></iframe>
+  </div>
+</section>
 
-  <footer class="footer">
+<!-- ========== Footer ========== -->
+<footer class="footer">
   <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-
-          <p>
-            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
-            <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-
-        </div>
-      </div>
+    <div class="content has-text-centered is-size-7">
+      <p>This page was built from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. Content © 2025 R. Daniel Magruder et al. &nbsp;•&nbsp; Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC‑BY‑SA 4.0</a>.</p>
     </div>
   </div>
 </footer>
 
-<!-- Statcounter tracking code -->
-  
-<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
-
-    <!-- End of Statcounter Code -->
-
-  </body>
-  </html>
+<script defer src="static/js/fontawesome.all.min.js"></script>
+</body>
+</html>
