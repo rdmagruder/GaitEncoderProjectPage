@@ -13,7 +13,7 @@
   <meta property="og:image" content="static/images/site_banner.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -21,9 +21,19 @@
     body {font-family: "Google Sans", sans-serif;}
     .dark-mode-toggle {position: fixed; top: 1rem; right: 1rem; z-index: 1000;}
     .dark-mode-toggle .button {border-radius: 50%;}
+    body.dark-mode {background:#1a1a1a;color:#f3f3f3;}
+    body.dark-mode .card {background:#2d2d2d;color:#f3f3f3;}
     .video-thumb video{width:100%;height:100%;object-fit:cover;cursor:pointer;}
     .video-thumb{transition:transform .2s;box-shadow:0 2px 3px rgba(10,10,10,.1)}
     .video-thumb:hover{transform:scale(1.03)}
+  .divider{
+      display:flex;align-items:center;justify-content:center;
+      background:#e5e5e5;border-radius:8px;padding:.6rem 1rem;margin:.5rem 0; color:#4a4a4a;
+      font-weight:600; letter-spacing:.2px;
+    }
+    body.dark-mode .divider{background:#3a3a3a;color:#d7d7d7}
+    .badge{display:inline-block;font-size:.65rem;border-radius:999px;padding:.15rem .5rem;margin-left:.35rem;background:#f0f0f0;color:#4a4a4a}
+    body.dark-mode .badge{background:#444;color:#ddd}
   </style>
 </head>
 <body>
@@ -90,19 +100,29 @@
 </section>
 <script>
   const vids=[
-    {file:'static/videos/unimpaired.mp4', label:'Unimpaired'},
-    {file:'static/videos/post_stroke.mp4', label:'Post‑Stroke'},
-    {file:'static/videos/parkinsons.mp4', label:"Parkinson's Disease"},
-    {file:'static/videos/cerebral_palsy.mp4', label:'Cerebral Palsy'}
+    {file:'static/videos/unimpaired.mp4', label:'Unimpaired', dmu:0.90, group:'seen'},
+    {file:'static/videos/post_stroke.mp4', label:'Post-Stroke', dmu:3.50, group:'seen'},
+    {file:'static/videos/cerebral_palsy.mp4', label:'Cerebral Palsy', dmu:2.24, group:'seen'},
+    {file:'static/videos/myotonic_dystrophy.mp4', label:'Myotonic Dystrophy', dmu:2.53, group:'unseen'},
+    {file:'static/videos/parkinsons.mp4', label:"Parkinson's Disease", dmu:2.09, group:'unseen'}
   ];
   const grid=document.getElementById('video-grid');
   const tpl=document.getElementById('vid-card-tpl').content;
+  let count=0;
   vids.forEach(v=>{
+    // Insert sleek grey divider before first unseen example
+    if(count===3 && v.group==='unseen'){
+      const div=document.createElement('div');
+      div.className='column is-full divider';
+      div.textContent='Unseen disorders (test set)';
+      grid.appendChild(div);
+    }
     const node=tpl.cloneNode(true);
     const vidEl=node.querySelector('video');
     const card=node.querySelector('.video-thumb');
     vidEl.src=v.file; vidEl.setAttribute('data-src',v.file);
-    node.querySelector('.label').textContent=v.label;
+    const labelEl=node.querySelector('.label');
+    labelEl.innerHTML=`${v.label} <span class="badge" title="Distance from mean unimpaired">DMU ${v.dmu.toFixed(2)}</span>`;
     // hover play / reset
     vidEl.onmouseover=()=>vidEl.play();
     vidEl.onmouseout =()=>{vidEl.pause();vidEl.currentTime=0;};
@@ -114,6 +134,7 @@
       modal.classList.add('is-active');
     };
     grid.appendChild(node);
+    count++;
   });
   // modal controls
   document.querySelectorAll('#modal .modal-background, #modal .modal-close').forEach(el=>{
