@@ -22,8 +22,15 @@
       align-items:flex-start; /* top-align cards so video tops line up */
       flex-wrap:nowrap;       /* keep on one row */
       overflow:visible;       /* no scrollbars; they fit */
-      margin-top: 1.25rem;   /* match .unseen-group padding-top */
-      margin-bottom: 1.5rem; /* match .unseen-group padding-bottom */
+    }
+
+    .row-5 > .video-thumb {
+      margin-top: 1.25rem; /* space from top */
+      margin-bottom: 1.5rem; /* space from bottom */
+    }
+
+    .unseen-group .video-thumb {
+      width: 220px;
     }
 
     /* --- Video cards: fixed width for perfect alignment --- */
@@ -143,7 +150,7 @@
     const labelEl = wrap.querySelector('.label');
     vidEl.src = v.file;
 
-    labelEl.innerHTML = '\${v.label} <span class="badge" title="Distance from mean unimpaired">DMU \${v.dmu.toFixed(2)}</span>';
+    labelEl.innerHTML = `${v.label} <span class="badge" title="Distance from mean unimpaired">DMU ${Number.isFinite(Number(v.dmu)) ? Number(v.dmu).toFixed(2) : '—'}</span>`;
 
     vidEl.onmouseover=()=>vidEl.play();
     vidEl.onmouseout =()=>{vidEl.pause();vidEl.currentTime=0;};
