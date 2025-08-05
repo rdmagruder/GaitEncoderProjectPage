@@ -25,6 +25,11 @@
     }
 
     /* --- Video cards: fixed width for perfect alignment --- */
+    /* Add equal vertical offset to the three seen cards (direct children of the row) */
+    .row-5 > .video-thumb {
+      margin-top: 1.25rem;   /* match .unseen-group padding-top */
+      margin-bottom: 1.5rem; /* match .unseen-group padding-bottom */
+    }
     .video-thumb{width:220px; transition:transform .2s;}
     .video-thumb:hover{transform:scale(1.03)}
     .video-thumb video{width:100%;height:100%;object-fit:cover;cursor:pointer;}
