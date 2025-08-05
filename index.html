@@ -22,14 +22,11 @@
       align-items:flex-start; /* top-align cards so video tops line up */
       flex-wrap:nowrap;       /* keep on one row */
       overflow:visible;       /* no scrollbars; they fit */
-    }
-
-    /* --- Video cards: fixed width for perfect alignment --- */
-    /* Add equal vertical offset to the three seen cards (direct children of the row) */
-    .row-5 > .video-thumb {
       margin-top: 1.25rem;   /* match .unseen-group padding-top */
       margin-bottom: 1.5rem; /* match .unseen-group padding-bottom */
     }
+
+    /* --- Video cards: fixed width for perfect alignment --- */
     .video-thumb{width:220px; transition:transform .2s;}
     .video-thumb:hover{transform:scale(1.03)}
     .video-thumb video{width:100%;height:100%;object-fit:cover;cursor:pointer;}
@@ -45,7 +42,6 @@
       display:flex;
       gap:1.25rem;
       align-items:flex-start;
-      padding:1.25rem 1.5rem 1.5rem;   /* makes the box taller & longer than videos */
       background:#eeeeee;
       border-radius:14px;
       box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);
@@ -141,15 +137,14 @@
           </figure>
         </div>
         <div class="card-content py-1 has-text-centered">
-          <p class="is-size-7 has-text-weight-medium mb-0 video-label"></p>
+          <p class="is-size-7 has-text-weight-medium mb-0 label"></p>
         </div>
       </div>`;
     const vidEl = wrap.querySelector('video');
     const labelEl = wrap.querySelector('.label');
     vidEl.src = v.file;
 
-    const d = Number(v.dmu);
-    labelEl.innerHTML = `${v.label} <span class="badge" title="Distance from mean unimpaired">DMU ${Number.isFinite(d) ? d.toFixed(2) : '—'}</span>`;
+    labelEl.innerHTML = '\${v.label} <span class="badge" title="Distance from mean unimpaired">DMU \${v.dmu.toFixed(2)}</span>';
 
     vidEl.onmouseover=()=>vidEl.play();
     vidEl.onmouseout =()=>{vidEl.pause();vidEl.currentTime=0;};
