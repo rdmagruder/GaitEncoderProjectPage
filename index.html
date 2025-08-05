@@ -3,41 +3,79 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Social / SEO -->
   <title>GaitEncoder – Foundational Representations of Gait</title>
-  <meta name="description" content="GaitEncoder learns compact, clinically relevant representations of gait that generalise across diverse pathologies and data‑collection modalities.">
+  <meta name="description" content="GaitEncoder learns compact, clinically relevant representations of gait that generalise across diverse pathologies and data-collection modalities.">
   <meta name="keywords" content="gait, biomechanics, variational autoencoder, foundation model, clinical gait analysis">
   <meta property="og:title" content="GaitEncoder – Foundational Representations of Gait" />
-  <meta property="og:description" content="A generative foundation model that distills stride‑level kinematics into a 16‑D latent space enabling downstream clinical tasks such as disease staging, rehabilitation tracking and outcome prediction." />
-  <!-- 🖼 Site banner placeholder (1200×630) -->
+  <meta property="og:description" content="A generative foundation model that distills stride-level kinematics into a 16-D latent space enabling downstream clinical tasks such as disease staging, rehabilitation tracking and outcome prediction." />
   <meta property="og:image" content="static/images/site_banner.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon.ico">
+
+  <!-- You can keep Bulma if you’re using it elsewhere, but the row below is pure flexbox -->
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     body {font-family: "Google Sans", sans-serif;}
     .dark-mode-toggle {position: fixed; top: 1rem; right: 1rem; z-index: 1000;}
     .dark-mode-toggle .button {border-radius: 50%;}
     body.dark-mode {background:#1a1a1a;color:#f3f3f3;}
     body.dark-mode .card {background:#2d2d2d;color:#f3f3f3;}
-    .video-thumb video{width:100%;height:100%;object-fit:cover;cursor:pointer;}
-    .video-thumb{transition:transform .2s;box-shadow:0 2px 3px rgba(10,10,10,.1)}
+
+    /* Video cards */
+    .video-thumb {transition:transform .2s;box-shadow:0 2px 3px rgba(10,10,10,.1); width:200px;}
     .video-thumb:hover{transform:scale(1.03)}
-  .divider{
-      display:flex;align-items:center;justify-content:center;
-      background:#e5e5e5;border-radius:8px;padding:.6rem 1rem;margin:.5rem 0; color:#4a4a4a;
-      font-weight:600; letter-spacing:.2px;
-    }
-    body.dark-mode .divider{background:#3a3a3a;color:#d7d7d7}
+    .video-thumb video{width:100%;height:100%;object-fit:cover;cursor:pointer;}
     .badge{display:inline-block;font-size:.65rem;border-radius:999px;padding:.15rem .5rem;margin-left:.35rem;background:#f0f0f0;color:#4a4a4a}
     body.dark-mode .badge{background:#444;color:#ddd}
+
+    /* Single-row layout with horizontal scroll fallback */
+    .row-5 {
+      display:flex;
+      gap:1rem;
+      align-items:flex-start;
+      flex-wrap:nowrap;           /* force one row */
+      overflow-x:auto;            /* allow scroll on small screens */
+      padding-bottom:.25rem;      /* give a little room below for scroll bar */
+    }
+
+    /* Unseen group styling */
+    .unseen-group {
+      position:relative;
+      display:flex;
+      gap:1rem;
+      align-items:flex-start;
+      padding:0.75rem 0.75rem 0.9rem;
+      background:#eeeeee;
+      border-radius:10px;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);
+    }
+    .unseen-label {
+      position:absolute;
+      top:-10px; left:12px;
+      background:#9e9e9e;
+      color:#fff;
+      font-size:.75rem;
+      font-weight:600;
+      padding:.15rem .5rem;
+      border-radius:999px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    body.dark-mode .unseen-group{background:#333; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);}
+    body.dark-mode .unseen-label{background:#666;}
+
+    /* Card internals */
+    .card {margin:0;}
+    .card-image figure {margin:0;aspect-ratio:3/4;}
+    .card-content {border-top:none;}
   </style>
 </head>
 <body>
-<!-- ========== Dark‑mode toggle ========== -->
+<!-- ========== Dark-mode toggle ========== -->
 <div class="dark-mode-toggle">
   <button class="button is-small" id="dark-toggle" aria-label="Toggle dark mode">
     <span class="icon"><i class="fas fa-moon"></i></span>
@@ -54,13 +92,13 @@
   <div class="hero-body">
     <div class="container has-text-centered">
       <h1 class="title is-2">GaitEncoder: Learning Foundational Representations of Gait</h1>
-      <h2 class="subtitle is-5">R. Daniel Magruder, Selim Gilon, Antoine Falisse, Scott D. Uhlrich</h2>
-      <p class="is-size-6"><em>Movement Bioengineering Lab, University of Utah</em></p>
+      <h2 class="subtitle is-5">R. Daniel Magruder, Selim Gilon, Antoine Falisse, Scott D. Uhlrich</h2>
+      <p class="is-size-6"><em>Movement Bioengineering Lab, University of Utah</em></p>
     </div>
   </div>
 </section>
 
-<!-- ========== Teaser videos ========== -->
+<!-- ========== Teaser videos (single row) ========== -->
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Example Reconstructions</h2>
@@ -76,67 +114,73 @@
       <button class="modal-close is-large" aria-label="close"></button>
     </div>
 
-    <div class="columns is-mobile is-multiline is-centered" style="gap:1rem;">
-      <!-- Card template -->
-      <template id="vid-card-tpl">
-        <div class="column is-narrow video-thumb" style="width:200px;padding:0;">
-          <div class="card" style="margin:0;">
-            <div class="card-image">
-              <figure class="image" style="margin:0;aspect-ratio:3/4;">
-                <video muted loop></video>
-              </figure>
-            </div>
-            <div class="card-content py-1 has-text-centered" style="border-top:none;">
-              <p class="is-size-7 has-text-weight-medium mb-0 label"></p>
-            </div>
-          </div>
-        </div>
-      </template>
-
-      <!-- Thumbnails populated by JS -->
-      <div id="video-grid" class="columns is-mobile is-multiline is-centered" style="gap:1rem;"></div>
-    </div>
+    <!-- One row with 3 seen cards + 2 unseen inside a grey group -->
+    <div id="video-row" class="row-5"></div>
   </div>
 </section>
+
 <script>
   const vids=[
     {file:'static/videos/unimpaired.mp4', label:'Unimpaired', dmu:0.90, group:'seen'},
     {file:'static/videos/post_stroke.mp4', label:'Post-Stroke', dmu:3.50, group:'seen'},
     {file:'static/videos/cerebral_palsy.mp4', label:'Cerebral Palsy', dmu:2.24, group:'seen'},
     {file:'static/videos/myotonic_dystrophy.mp4', label:'Myotonic Dystrophy', dmu:2.53, group:'unseen'},
-    {file:'static/videos/parkinsons.mp4', label:"Parkinson's Disease", dmu:2.09, group:'unseen'}
+    {file:"static/videos/parkinsons.mp4", label:"Parkinson's Disease", dmu:2.09, group:'unseen'}
   ];
-  const grid=document.getElementById('video-grid');
-  const tpl=document.getElementById('vid-card-tpl').content;
-  let count=0;
-  vids.forEach(v=>{
-    // Insert sleek grey divider before first unseen example
-    if(count===3 && v.group==='unseen'){
-      const div=document.createElement('div');
-      div.className='column is-full divider';
-      div.textContent='Unseen disorders (test set)';
-      grid.appendChild(div);
-    }
-    const node=tpl.cloneNode(true);
-    const vidEl=node.querySelector('video');
-    const card=node.querySelector('.video-thumb');
-    vidEl.src=v.file; vidEl.setAttribute('data-src',v.file);
-    const labelEl=node.querySelector('.label');
-    labelEl.innerHTML=`${v.label} <span class="badge" title="Distance from mean unimpaired">DMU ${v.dmu.toFixed(2)}</span>`;
+
+  const row = document.getElementById('video-row');
+
+  // Build a card element for a video
+  function makeCard(v){
+    const wrap = document.createElement('div');
+    wrap.className = 'video-thumb';
+    wrap.innerHTML = `
+      <div class="card">
+        <div class="card-image">
+          <figure class="image">
+            <video muted loop playsinline></video>
+          </figure>
+        </div>
+        <div class="card-content py-1 has-text-centered">
+          <p class="is-size-7 has-text-weight-medium mb-0 label"></p>
+        </div>
+      </div>`;
+    const vidEl = wrap.querySelector('video');
+    const labelEl = wrap.querySelector('.label');
+    vidEl.src = v.file;
+    labelEl.innerHTML = '\`\${v.label} <span class="badge" title="Distance from mean unimpaired">DMU \${v.dmu.toFixed(2)}</span>\`';
+
     // hover play / reset
     vidEl.onmouseover=()=>vidEl.play();
     vidEl.onmouseout =()=>{vidEl.pause();vidEl.currentTime=0;};
+
     // click -> modal
-    card.onclick=()=>{
+    wrap.onclick=()=>{
       const modal=document.getElementById('modal');
       const mvid=document.getElementById('modal-video');
       mvid.src=v.file;
       modal.classList.add('is-active');
     };
-    grid.appendChild(node);
-    count++;
-  });
-  // modal controls
+    return wrap;
+  }
+
+  // Create the row: first 3 seen, then a grouped grey box with the last 2
+  const seen = vids.filter(v=>v.group==='seen');
+  const unseen = vids.filter(v=>v.group==='unseen');
+
+  seen.forEach(v=>row.appendChild(makeCard(v)));
+
+  const group = document.createElement('div');
+  group.className = 'unseen-group';
+  const label = document.createElement('div');
+  label.className = 'unseen-label';
+  label.textContent = 'Unseen Conditions (Test)';
+  group.appendChild(label);
+
+  unseen.forEach(v=>group.appendChild(makeCard(v)));
+  row.appendChild(group);
+
+  // modal close
   document.querySelectorAll('#modal .modal-background, #modal .modal-close').forEach(el=>{
     el.onclick=()=>{
       const modal=document.getElementById('modal');
@@ -152,11 +196,11 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Abstract</h2>
     <div class="content">
-      <p><strong>Background.</strong> Regular gait analysis could enhance personalised treatment for many movement‑related conditions; however, it is not routinely integrated into clinical care. Although mobile sensing (e.g. smartphone‑based motion capture) enables rapid gait assessment, extracting actionable insights remains a challenge.</p>
-      <p><strong>Objective.</strong> We introduce <em>GaitEncoder</em>, a generative foundation model that encodes high‑dimensional 3D gait kinematics into a compact 16‑dimensional latent space and enables clinically meaningful downstream tasks across diverse pathologies.</p>
-      <p><strong>Methods.</strong> We aggregated eight datasets comprising 631 individuals (age 8-88) spanning seven pathologies and trained a semi‑supervised variational autoencoder. We evaluated zero‑shot disorder classification, UPDRS severity prediction, rehabilitation tracking, and patient‑specific surgical outcome prediction.</p>
-      <p><strong>Results.</strong> The latent representation distinguished an unseen neuromuscular disorder from controls (<em>p = 0.031</em>), predicted Parkinson’s Disease severity (<em>r = 0.65</em>), tracked acute stroke recovery, and outperformed average‑effect baselines in forecasting post‑hip‑replacement kinematic changes (<em>p = 0.014</em>).</p>
-      <p><strong>Significance.</strong> Our GaitEncoder provides a generalizable representation which may accelerate the development of clinical tools for monitoring disease progression, guiding rehabilitation, and informing surgical decisions, particularly for rare movement‑related disorders.</p>
+      <p><strong>Background.</strong> Regular gait analysis could enhance personalised treatment for many movement-related conditions; however, it is not routinely integrated into clinical care. Although mobile sensing (e.g. smartphone-based motion capture) enables rapid gait assessment, extracting actionable insights remains a challenge.</p>
+      <p><strong>Objective.</strong> We introduce <em>GaitEncoder</em>, a generative foundation model that encodes high-dimensional 3D gait kinematics into a compact 16-dimensional latent space and enables clinically meaningful downstream tasks across diverse pathologies.</p>
+      <p><strong>Methods.</strong> We aggregated eight datasets comprising 631 individuals (age 8-88) spanning seven pathologies and trained a semi-supervised variational autoencoder. We evaluated zero-shot disorder classification, UPDRS severity prediction, rehabilitation tracking, and patient-specific surgical outcome prediction.</p>
+      <p><strong>Results.</strong> The latent representation distinguished an unseen neuromuscular disorder from controls (<em>p = 0.031</em>), predicted Parkinson’s Disease severity (<em>r = 0.65</em>), tracked acute stroke recovery, and outperformed average-effect baselines in forecasting post-hip-replacement kinematic changes (<em>p = 0.014</em>).</p>
+      <p><strong>Significance.</strong> Our GaitEncoder provides a generalizable representation which may accelerate the development of clinical tools for monitoring disease progression, guiding rehabilitation, and informing surgical decisions, particularly for rare movement-related disorders.</p>
     </div>
   </div>
 </section>
@@ -165,7 +209,6 @@
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Poster</h2>
-    <!-- Replace poster.pdf with your actual file path -->
     <iframe src="static/pdfs/poster.pdf" style="width:100%;height:1000px;border:none;"></iframe>
   </div>
 </section>
@@ -174,7 +217,7 @@
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered is-size-7">
-      <p>This page was built from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. Content © 2025 R. Daniel Magruder et al. &nbsp;•&nbsp; Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC‑BY‑SA 4.0</a>.</p>
+      <p>This page was built from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. Content © 2025 R. Daniel Magruder et al. • Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC-BY-SA 4.0</a>.</p>
     </div>
   </div>
 </footer>
