@@ -185,20 +185,33 @@
   });
 </script>
 
+<!-- ========== Abstract ========== -->
 <section class="section has-background-light">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Abstract</h2>
     <div class="content">
-      <p><strong>Background.</strong> Regular gait analysis could enhance personalised treatment...</p>
-      <!-- snip for brevity; keep your original abstract/results/significance -->
+      <p><strong>Background.</strong> Regular gait analysis could enhance personalised treatment for many movement-related conditions; however, it is not routinely integrated into clinical care. Although mobile sensing (e.g. smartphone-based motion capture) enables rapid gait assessment, extracting actionable insights remains a challenge.</p>
+      <p><strong>Objective.</strong> We introduce <em>GaitEncoder</em>, a generative foundation model that encodes high-dimensional 3D gait kinematics into a compact 16-dimensional latent space and enables clinically meaningful downstream tasks across diverse pathologies.</p>
+      <p><strong>Methods.</strong> We aggregated eight datasets comprising 631 individuals (age 8-88) spanning seven pathologies and trained a semi-supervised variational autoencoder. We evaluated zero-shot disorder classification, UPDRS severity prediction, rehabilitation tracking, and patient-specific surgical outcome prediction.</p>
+      <p><strong>Results.</strong> The latent representation distinguished an unseen neuromuscular disorder from controls (<em>p = 0.031</em>), predicted Parkinson’s Disease severity (<em>r = 0.65</em>), tracked acute stroke recovery, and outperformed average-effect baselines in forecasting post-hip-replacement kinematic changes (<em>p = 0.014</em>).</p>
+      <p><strong>Significance.</strong> Our GaitEncoder provides a generalizable representation which may accelerate the development of clinical tools for monitoring disease progression, guiding rehabilitation, and informing surgical decisions, particularly for rare movement-related disorders.</p>
     </div>
   </div>
 </section>
 
+<!-- ========== Poster ========== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Poster</h2>
+    <iframe src="static/pdfs/poster.pdf" style="width:100%;height:1000px;border:none;"></iframe>
+  </div>
+</section>
+
+<!-- ========== Footer ========== -->
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered is-size-7">
-      <p>Content © 2025 R. Daniel Magruder et al. • CC-BY-SA 4.0</p>
+      <p>This page was built from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>. Content © 2025 R. Daniel Magruder et al. • Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC-BY-SA 4.0</a>.</p>
     </div>
   </div>
 </footer>
