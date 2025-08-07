@@ -117,6 +117,11 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Example Reconstructions</h2>
 
+    <p class="has-text-centered" style="max-width:650px;margin:0 auto 2.2rem auto;font-size:1.08rem;color:#555;">
+      <b>Legend:</b>
+      The <span style="color:rgb(211,211,211);font-weight:600;">grey skeleton</span> shows the original motion capture. Our model distills kinematics to 16 features, which are decoded and visualized as the <span style="color:rgb(153,153,209);font-weight:600;">purple skeleton</span>. The DMU score (<i>Distance from Mean Unimpaired</i>) quantifies each example’s deviation from unimpaired gait, computed as the Mahalanobis distance in the learned feature space.
+    </p>
+
     <!-- Modal for large playback -->
     <div class="modal" id="modal">
       <div class="modal-background"></div>
@@ -214,6 +219,19 @@
       <p><strong>Methods.</strong> We aggregated eight datasets comprising 631 individuals (age 8-88) spanning seven pathologies and trained a semi-supervised variational autoencoder. We evaluated zero-shot disorder classification, UPDRS severity prediction, rehabilitation tracking, and patient-specific surgical outcome prediction.</p>
       <p><strong>Results.</strong> The latent representation distinguished an unseen neuromuscular disorder from controls (<em>p = 0.031</em>), predicted Parkinson’s Disease severity (<em>r = 0.65</em>), tracked acute stroke recovery, and outperformed average-effect baselines in forecasting post-hip-replacement kinematic changes (<em>p = 0.014</em>).</p>
       <p><strong>Significance.</strong> Our GaitEncoder provides a generalizable representation which may accelerate the development of clinical tools for monitoring disease progression, guiding rehabilitation, and informing surgical decisions, particularly for rare movement-related disorders.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DMU Distribution ========== -->
+<section class="section" style="padding-top:2.2rem;">
+  <div class="container is-max-desktop">
+    <h3 class="title is-4 has-text-centered" style="margin-bottom:1.1rem;">Distribution of Gait Deviation Scores (DMU)</h3>
+    <p class="has-text-centered" style="max-width:700px;margin:0 auto 1.8rem auto;font-size:1.05rem;color:#555;">
+      <b>DMU</b> (<i>Distance from Mean Unimpaired</i>) measures how far each individual's gait is from the reference distribution of unimpaired walking. This plot shows the distribution of DMU values across different patient populations. They grey area marks the 75th to 95th percentiles of the unimpaired population.
+    </p>
+    <div style="display:flex;justify-content:center;">
+      <img src="static/images/DMU_distribution.svg" alt="Distribution of DMU scores by population" style="max-width:95%;height:auto;border-radius:10px;box-shadow:0 2px 16px rgba(0,0,0,0.07);background:#fff;">
     </div>
   </div>
 </section>
