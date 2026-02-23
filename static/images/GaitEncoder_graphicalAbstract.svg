@@ -3,7 +3,7 @@
   <rect x="1" y="37.07" width="576" height="365.56" style="fill: none; stroke: #860b17; stroke-miterlimit: 10; stroke-width: 2px;"/>
   <rect x="1" y="1" width="576" height="55.71" style="fill: #86171a; stroke: #86171a; stroke-miterlimit: 10; stroke-width: 2px;"/>
   <text transform="translate(79.1 16.05)" style="fill: #fff;"><tspan style="font-family: Arial-BoldMT, Arial; font-size: 14px; font-weight: 700;"><tspan x="0" y="0">GaitEncoder:</tspan><tspan x="87.9" y="0" xml:space="preserve" style="letter-spacing: -.04em;"> A</tspan><tspan x="100.86" y="0" xml:space="preserve"> foundation model of gait kinematics for diverse </tspan></tspan><tspan style="font-family: Arial-BoldMT, Arial; font-weight: 700;"><tspan x="87.77" y="16.8" style="font-size: 14px;">clinical applications and pathologies</tspan><tspan x="332.04" y="16.8" style="font-size: 12px;"> </tspan></tspan><tspan style="font-family: ArialMT, Arial; font-size: 8px;"><tspan x="93.41" y="36">R. Daniel Magrude</tspan><tspan x="160.11" y="36" style="letter-spacing: -.06em;">r</tspan><tspan x="162.33" y="36">, Selim Gilon,</tspan><tspan x="209.9" y="36" style="letter-spacing: -.06em;"> </tspan><tspan x="211.68" y="36">Antoine Falisse, Scott D. Uhlrich</tspan></tspan></text>
-  <text transform="translate(15.55 285.38)" style="fill: #231f20; font-family: Arial-BoldMT, Arial; font-size: 10px; font-weight: 700;"><tspan x="0" y="0" style="letter-spacing: -.02em;">W</tspan><tspan x="9.26" y="0">eakly-supervised foundational model</tspan></text>
+  <text transform="translate(19.72 289.38)" style="fill: #231f20; font-family: Arial-BoldMT, Arial; font-size: 10px; font-weight: 700;"><tspan x="0" y="0" style="letter-spacing: -.02em;">W</tspan><tspan x="9.26" y="0">eakly-supervised foundation model</tspan></text>
   <g>
     <g>
       <rect x="98.7" y="193.52" width="19.1" height="53.92" style="fill: #ddb9c8; stroke: #231f20; stroke-miterlimit: 10;"/>
@@ -107,7 +107,7 @@
       <text transform="translate(410.41 177.9)" style="fill: #231f20; font-family: ArialMT, Arial; font-size: 8px;"><tspan x="0" y="0" style="letter-spacing: -.04em;">T</tspan><tspan x="4.59" y="0">rack longitudinal </tspan><tspan x="-5.04" y="9.6">recovery in a person </tspan><tspan x="11.42" y="19.2">post-stroke</tspan></text>
     </g>
   </g>
-  <text transform="translate(227.05 76.05)" style="fill: #231f20; font-family: Arial-BoldMT, Arial; font-size: 10px; font-weight: 700;"><tspan x="0" y="0">Our foundational model: multiple downstream, clinically-relevant tasks</tspan></text>
+  <text transform="translate(231.22 76.05)" style="fill: #231f20; font-family: Arial-BoldMT, Arial; font-size: 10px; font-weight: 700;"><tspan x="0" y="0">Our foundation model: multiple downstream, clinically-relevant tasks</tspan></text>
   <g id="text_7" data-name="text 7">
     <text transform="translate(241.6 331.41) rotate(-90)" style="fill: #010101; font-family: ArialMT, Arial; font-size: 8px; isolation: isolate;"><tspan x="0" y="0">Balanced</tspan><tspan x="33.36" y="0" style="letter-spacing: -.06em;"> </tspan><tspan x="35.14" y="0">Accuracy</tspan></text>
   </g>
